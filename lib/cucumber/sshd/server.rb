@@ -14,15 +14,20 @@ module Cucumber
 
       attr_accessor :base_path, :host, :port, :pid
 
-      def initialize(base_path)
+      def initialize(base_path, wait_ready: false)
         @base_path  = base_path
         @host       = ENV['SSHD_TEST_HOST'] ? ENV['SSHD_TEST_HOST'] : HOST
         @port       = ENV['SSHD_TEST_PORT'] ? ENV['SSHD_TEST_PORT'] : PORT
         @pid        = nil
+        @wait_ready = wait_ready
       end
 
       def command
         "#{COMMAND} -f #{SSHD_CONFIG_PATH} #{COMMAND_ARGS}"
+      end
+
+      def wait_ready?
+        !!@wait_ready
       end
 
       def start
@@ -32,6 +37,15 @@ module Cucumber
             exec command
           end
         end
+
+        wait_ready! if wait_ready?
+      end
+
+      def wait_ready!
+        TCPSocket.new 'localhost', port
+      rescue Errno::ECONNREFUSED
+        sleep 0.05
+        retry
       end
 
       def stop
