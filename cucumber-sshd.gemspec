@@ -11,4 +11,6 @@ Gem::Specification.new do |s|
   s.email   = 'tj@a13.fr'
 
   s.files   = `git ls-files`.split $/
+
+  s.add_dependency 'aruba', '~> 0.5'
 end
