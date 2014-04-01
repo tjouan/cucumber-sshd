@@ -12,6 +12,15 @@ module Cucumber
       SSHD_CONFIG_PATH  = 'etc/sshd_config'
       SSH_CONFIG_PATH   = '.ssh/config'
 
+      class << self
+        def start(*args)
+          server = new(args.shift, *args)
+          server.make_env
+          server.start
+          server
+        end
+      end
+
       attr_accessor :base_path, :host, :port, :pid
 
       def initialize(base_path, wait_ready: false)

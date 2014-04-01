@@ -1,18 +1,15 @@
 require 'cucumber/sshd/server'
 
 Before('@sshd') do
-  make_server = proc do
-    server = Cucumber::SSHD::Server.new(current_dir, wait_ready: @_sshd_wait_ready)
-    server.make_env
-    server.start
-    server
+  start_server = proc do
+    Cucumber::SSHD::Server.start(current_dir, wait_ready: @_sshd_wait_ready)
   end
 
   if @_sshd_fast && !@_sshd
-    @_sshd = make_server.call
+    @_sshd = start_server.call
     at_exit { @_sshd.stop }
   else
-    @_sshd = make_server.call
+    @_sshd = start_server.call
   end
 
   ENV['HOME'] = File.expand_path current_dir
