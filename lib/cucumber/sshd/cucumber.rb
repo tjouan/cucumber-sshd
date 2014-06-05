@@ -5,9 +5,12 @@ Before('@sshd') do
     Cucumber::SSHD::Server.start(current_dir, wait_ready: @_sshd_wait_ready)
   end
 
-  if @_sshd_fast && !@_sshd
-    @_sshd = start_server.call
-    at_exit { @_sshd.stop }
+  if @_sshd_fast && !$_sshd
+    unless $_sshd
+      $_sshd = start_server.call
+      at_exit { $_sshd.stop }
+    end
+    @_sshd = $_sshd
   else
     @_sshd = start_server.call
   end
