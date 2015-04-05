@@ -14,8 +14,6 @@ Before('@sshd') do
   else
     @_sshd = start_server.call
   end
-
-  ENV['HOME'] = File.expand_path current_dir
 end
 
 After('@sshd') do
