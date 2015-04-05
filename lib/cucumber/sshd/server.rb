@@ -108,7 +108,7 @@ HostKey #{File.expand_path base_path}/#{KEY_PATH}
 PidFile /dev/null
 UsePrivilegeSeparation no
 Subsystem sftp /usr/libexec/sftp-server
-ForceCommand HOME=#{File.expand_path base_path} sh -c "cd ~; $SSH_ORIGINAL_COMMAND"
+ForceCommand HOME=#{File.expand_path base_path} sh -c "cd ~; [ -f .ssh/rc ] && . .ssh/rc; $SSH_ORIGINAL_COMMAND"
         eoh
 
         write_file SSH_CONFIG_PATH, <<-eoh
