@@ -14,7 +14,10 @@ module Cucumber
       SSHD_CONFIG_PATH      = 'etc/sshd_config'
       SSH_CONFIG_PATH       = '.ssh/config'
       SSH_KNOWN_HOSTS_PATH  = '.ssh/known_host'
-
+      SFTP_SERVER_PATHS     = %w[
+        /usr/libexec/sftp-server
+        /usr/lib/openssh/sftp-server
+      ]
       class << self
         def start(*args)
           server = new(args.shift, *args)
@@ -110,7 +113,7 @@ Protocol 2
 HostKey #{File.expand_path base_path}/#{KEY_PATH}
 PidFile /dev/null
 UsePrivilegeSeparation no
-Subsystem sftp /usr/libexec/sftp-server
+Subsystem sftp #{sftp_server_path}
 ForceCommand HOME=#{File.expand_path base_path} sh -c "cd ~; [ -f .ssh/rc ] && . .ssh/rc; $SSH_ORIGINAL_COMMAND"
         eoh
 
@@ -137,6 +140,10 @@ Host                    #{host}
       def create_dir_secure(path)
         create_dir path
         filesystem_permissions 0700, path
+      end
+
+      def sftp_server_path
+        SFTP_SERVER_PATHS.detect { |e| File.exist? e } or SFTP_SERVER_PATHS.first
       end
     end
   end
