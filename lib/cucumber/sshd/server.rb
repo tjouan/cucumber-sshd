@@ -1,3 +1,5 @@
+require 'aruba/api'
+
 module Cucumber
   module SSHD
     class Server
