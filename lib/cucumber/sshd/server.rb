@@ -5,14 +5,15 @@ module Cucumber
     class Server
       include Aruba::Api
 
-      HOST              = 'some_host.test'
-      PORT              = 2222
-      COMMAND           = '/usr/sbin/sshd'
-      COMMAND_ARGS      = '-Deq'
-      KEY_PATH          = 'etc/ssh_host_rsa_key'
-      KEY_PUB_PATH      = KEY_PATH.dup << '.pub'
-      SSHD_CONFIG_PATH  = 'etc/sshd_config'
-      SSH_CONFIG_PATH   = '.ssh/config'
+      HOST                  = 'some_host.test'
+      PORT                  = 2222
+      COMMAND               = '/usr/sbin/sshd'
+      COMMAND_ARGS          = '-Deq'
+      KEY_PATH              = 'etc/ssh_host_rsa_key'
+      KEY_PUB_PATH          = KEY_PATH.dup << '.pub'
+      SSHD_CONFIG_PATH      = 'etc/sshd_config'
+      SSH_CONFIG_PATH       = '.ssh/config'
+      SSH_KNOWN_HOSTS_PATH  = '.ssh/known_host'
 
       class << self
         def start(*args)
@@ -114,10 +115,16 @@ ForceCommand HOME=#{File.expand_path base_path} sh -c "cd ~; [ -f .ssh/rc ] && .
         eoh
 
         write_file_secure SSH_CONFIG_PATH, <<-eoh
-Host        #{host}
-  HostName  localhost
-  Port      #{port}
+Host                    #{host}
+  HostName              localhost
+  Port                  #{port}
+  UserKnownHostsFile    #{File.expand_path base_path}/#{SSH_KNOWN_HOSTS_PATH}
         eoh
+
+        write_file_secure SSH_KNOWN_HOSTS_PATH, <<-eoh
+[localhost]:2222 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDsRUMp4zs1gIYZUnDTBYsYKim0wVJHsOhuFsTHZsBBtYMsUEXtL1telb9115sUDgYGQdWuI0/C78gaMiA7e2K9VzLqKC40p1hEAGVJ+l4Cz450LMqHIRaGYqcUxmzYyE+ImD8pR6naAVkugRyz2+STfv5wty5RWRdU5I9eVgK4eOCTBo32KP8q8Jws/i3Dzcfc/KHVaf9jiTX7edY3ZLdGBEcX1GMTHuebYWZdxmrXDKA97kbZtA29krKQv7CUogfAqIzgBalUKVzM6KWM2/0pE6EZZqchk00EgNOeKTEW9jQXKg/Wq9GsTwGWrE17Ib+9g2Zey/zGk7Qw4XrnPd3Z
+        eoh
+      end
 
 
       private
