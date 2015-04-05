@@ -65,9 +65,9 @@ module Cucumber
       end
 
       def make_env
-        %w[etc .ssh].map { |e| create_dir e }
+        %w[etc .ssh].map { |e| create_dir_secure e }
 
-        write_file KEY_PATH, <<-eoh
+        write_file_secure KEY_PATH, <<-eoh
 -----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEA7EVDKeM7NYCGGVJw0wWLGCoptMFSR7DobhbEx2bAQbWDLFBF
 7S9bXpW/ddebFA4GBkHVriNPwu/IGjIgO3tivVcy6iguNKdYRABlSfpeAs+OdCzK
@@ -97,11 +97,11 @@ iDjcFK8S1e5vnlZAh9xH1WMCEsaz1WNqWm7CZOayN2LFn6Ed9seYYg==
 -----END RSA PRIVATE KEY-----
         eoh
 
-        write_file KEY_PUB_PATH, <<-eoh
+        write_file_secure KEY_PUB_PATH, <<-eoh
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDsRUMp4zs1gIYZUnDTBYsYKim0wVJHsOhuFsTHZsBBtYMsUEXtL1telb9115sUDgYGQdWuI0/C78gaMiA7e2K9VzLqKC40p1hEAGVJ+l4Cz450LMqHIRaGYqcUxmzYyE+ImD8pR6naAVkugRyz2+STfv5wty5RWRdU5I9eVgK4eOCTBo32KP8q8Jws/i3Dzcfc/KHVaf9jiTX7edY3ZLdGBEcX1GMTHuebYWZdxmrXDKA97kbZtA29krKQv7CUogfAqIzgBalUKVzM6KWM2/0pE6EZZqchk00EgNOeKTEW9jQXKg/Wq9GsTwGWrE17Ib+9g2Zey/zGk7Qw4XrnPd3Z
         eoh
 
-        write_file SSHD_CONFIG_PATH, <<-eoh
+        write_file_secure SSHD_CONFIG_PATH, <<-eoh
 Port #{port}
 ListenAddress ::1
 
@@ -113,11 +113,23 @@ Subsystem sftp /usr/libexec/sftp-server
 ForceCommand HOME=#{File.expand_path base_path} sh -c "cd ~; [ -f .ssh/rc ] && . .ssh/rc; $SSH_ORIGINAL_COMMAND"
         eoh
 
-        write_file SSH_CONFIG_PATH, <<-eoh
+        write_file_secure SSH_CONFIG_PATH, <<-eoh
 Host        #{host}
   HostName  localhost
   Port      #{port}
         eoh
+
+
+      private
+
+      def write_file_secure(path, content)
+        write_file path, content
+        filesystem_permissions 0600, path
+      end
+
+      def create_dir_secure(path)
+        create_dir path
+        filesystem_permissions 0700, path
       end
     end
   end
