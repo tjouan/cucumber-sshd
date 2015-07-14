@@ -1,6 +1,10 @@
 cucumber-sshd
 =============
 
+[![Version      ][badge-version-img]][badge-version-uri]
+[![Build status ][badge-build-img]][badge-build-uri]
+
+
   This ruby gem runs a "fake" sshd process for testing purpose in
 cucumber scenario tagged as `@sshd`. It is especially useful when
 testing programs with aruba, like a provisioning program that would
@@ -49,3 +53,10 @@ Here are the defaults:
 
     SSHD_TEST_HOST=some_host.test
     SSHD_TEST_PORT=2222
+
+
+
+[badge-version-img]:  https://img.shields.io/gem/v/cucumber-sshd.svg?style=flat-square
+[badge-version-uri]:  https://rubygems.org/gems/cucumber-sshd
+[badge-build-img]:    https://img.shields.io/travis/tjouan/cucumber-sshd/master.svg?style=flat-square
+[badge-build-uri]:    https://travis-ci.org/tjouan/cucumber-sshd
