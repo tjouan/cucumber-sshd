@@ -2,7 +2,7 @@ require 'cucumber/sshd/server'
 
 Before('@sshd') do
   start_server = proc do
-    Cucumber::SSHD::Server.start(current_dir, wait_ready: @_sshd_wait_ready)
+    Cucumber::SSHD::Server.start(expand_path('.'), wait_ready: @_sshd_wait_ready)
   end
 
   if @_sshd_fast && !$_sshd

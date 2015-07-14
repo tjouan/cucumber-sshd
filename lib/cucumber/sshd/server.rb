@@ -46,7 +46,7 @@ module Cucumber
       end
 
       def start
-        in_current_dir do
+        cd '.' do
           @pid = fork do
             $stderr.reopen '/dev/null'
             exec command
@@ -134,12 +134,12 @@ Host                    #{host}
 
       def write_file_secure(path, content)
         write_file path, content
-        filesystem_permissions 0600, path
+        chmod 0600, path
       end
 
       def create_dir_secure(path)
-        create_dir path
-        filesystem_permissions 0700, path
+        create_directory path
+        chmod 0700, path
       end
 
       def sftp_server_path

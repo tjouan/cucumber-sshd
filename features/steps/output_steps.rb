@@ -7,5 +7,5 @@ Then /^the output must be empty$/ do
 end
 
 Then /^the output must be aruba current directory$/ do
-  assert_exact_output File.expand_path(current_dir), all_output.chomp
+  assert_exact_output expand_path('.'), all_output.chomp
 end
