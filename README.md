@@ -20,7 +20,6 @@ persist across the whole test suite for faster run.
 Warning
 -------
 
-* no test coverage
 * pollute cucumber contexts with multiple instance variables
 * pollute global context with a variable
 * uses `Kernel#at_exit` when `wait_ready` option is enabled
