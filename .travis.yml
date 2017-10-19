@@ -2,9 +2,9 @@ sudo: false
 language: ruby
 cache: bundler
 rvm:
+  - 2.4
+  - 2.3
   - 2.2
-  - ruby-head
-  - 2.1
 before_script:
   - ssh-keygen -f ~/.ssh/id_rsa -t rsa -N ''
   - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
