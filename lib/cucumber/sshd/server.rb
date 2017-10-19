@@ -69,8 +69,8 @@ qnLMVQddVitzQP7LEhXbNUuUAzEMfA6rAA==
       end
 
       def stop
-        Process.kill('TERM', pid)
-        Process.wait(pid)
+        Process.kill 'TERM', pid
+        Process.wait pid
       end
 
     private
