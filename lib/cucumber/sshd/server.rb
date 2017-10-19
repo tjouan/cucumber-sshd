@@ -5,22 +5,23 @@ module Cucumber
     class Server
       include Aruba::Api
 
-      HOST                  = 'some_host.test'
+      HOST                  = 'some_host.test'.freeze
       PORT                  = 2222
-      COMMAND               = '/usr/sbin/sshd'
-      COMMAND_ARGS          = '-Deq'
-      KEY_PATH              = 'etc/ssh_host_rsa_key'
-      KEY_PUB_PATH          = KEY_PATH.dup << '.pub'
-      SSHD_CONFIG_PATH      = 'etc/sshd_config'
-      SSH_CONFIG_PATH       = '.ssh/config'
-      SSH_KNOWN_HOSTS_PATH  = '.ssh/known_host'
+      COMMAND               = '/usr/sbin/sshd'.freeze
+      COMMAND_ARGS          = '-Deq'.freeze
+      KEY_PATH              = 'etc/ssh_host_rsa_key'.freeze
+      KEY_PUB_PATH          = [KEY_PATH, '.pub'].join.freeze
+      SSHD_CONFIG_PATH      = 'etc/sshd_config'.freeze
+      SSH_CONFIG_PATH       = '.ssh/config'.freeze
+      SSH_KNOWN_HOSTS_PATH  = '.ssh/known_host'.freeze
       SFTP_SERVER_PATHS     = %w[
         /usr/libexec/sftp-server
         /usr/lib/openssh/sftp-server
-      ]
+      ].freeze
+
       class << self
-        def start(*args)
-          server = new(args.shift, *args)
+        def start *args
+          server = new args.shift, *args
           server.make_env
           server.start
           server
@@ -29,7 +30,7 @@ module Cucumber
 
       attr_accessor :base_path, :host, :port, :pid
 
-      def initialize(base_path, wait_ready: false)
+      def initialize base_path, wait_ready: false
         @base_path  = base_path
         @host       = ENV['SSHD_TEST_HOST'] ? ENV['SSHD_TEST_HOST'] : HOST
         @port       = ENV['SSHD_TEST_PORT'] ? ENV['SSHD_TEST_PORT'] : PORT
@@ -129,15 +130,14 @@ Host                    #{host}
         eoh
       end
 
+    private
 
-      private
-
-      def write_file_secure(path, content)
+      def write_file_secure path, content
         write_file path, content
         chmod 0600, path
       end
 
-      def create_dir_secure(path)
+      def create_dir_secure path
         create_directory path
         chmod 0700, path
       end

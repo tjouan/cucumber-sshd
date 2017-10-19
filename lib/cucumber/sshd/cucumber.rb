@@ -1,8 +1,8 @@
 require 'cucumber/sshd/server'
 
-Before('@sshd') do
-  start_server = proc do
-    Cucumber::SSHD::Server.start(expand_path('.'), wait_ready: @_sshd_wait_ready)
+Before '@sshd' do
+  start_server = -> do
+    Cucumber::SSHD::Server.start expand_path(?.), wait_ready: @_sshd_wait_ready
   end
 
   if @_sshd_fast && !$_sshd
@@ -16,6 +16,6 @@ Before('@sshd') do
   end
 end
 
-After('@sshd') do
+After '@sshd' do
   @_sshd.stop unless @_sshd_fast
 end

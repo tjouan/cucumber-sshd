@@ -2,4 +2,4 @@ require 'cucumber/rake/task'
 
 task default: :features
 
-Cucumber::Rake::Task.new(:features)
+Cucumber::Rake::Task.new :features
