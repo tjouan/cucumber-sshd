@@ -5,6 +5,10 @@ rvm:
   - 2.4
   - 2.3
   - 2.2
+
+install:
+  - echo "source 'https://rubygems.org'; gemspec" > ~/spec_deps.rb
+  - gem install --no-lock --file ~/spec_deps.rb
 before_script:
   - ssh-keygen -f ~/.ssh/id_rsa -t rsa -N ''
   - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
