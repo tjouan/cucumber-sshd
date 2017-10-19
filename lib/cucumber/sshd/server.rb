@@ -110,7 +110,7 @@ ForceCommand HOME=#{File.expand_path base_path} sh -c "cd ~; [ -f .ssh/rc ] && .
       end
 
       def sftp_server_path
-        SFTP_SERVER_PATHS.detect { |e| File.exist? e } or SFTP_SERVER_PATHS.first
+        SFTP_SERVER_PATHS.detect { |e| File.exist? e }
       end
 
       def wait_ready!
