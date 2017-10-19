@@ -76,7 +76,12 @@ qnLMVQddVitzQP7LEhXbNUuUAzEMfA6rAA==
     private
 
       def command
-        "#{COMMAND} -f #{SSHD_CONFIG_PATH} #{COMMAND_ARGS}"
+        [
+          COMMAND,
+          '-f',
+          SSHD_CONFIG_PATH,
+          COMMAND_ARGS
+        ].join ' '
       end
 
       def create_dir_secure path
