@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
 
   s.files       = `git ls-files lib`.split $/
 
-  s.add_dependency 'childprocess', '~> 0.8'
+  s.add_dependency 'childprocess'
 
   s.add_development_dependency 'cucumber', '~> 2.0'
   s.add_development_dependency 'rake', '~> 10.4'
