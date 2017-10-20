@@ -39,8 +39,5 @@ require 'cucumber/sshd/cucumber'
 
 ### runtime config
 
-You can control the host name and the port with environment variables.
-Here are the defaults:
-
-    SSHD_TEST_HOST=some_host.test
-    SSHD_TEST_PORT=2222
+  You can control the listening port with `CUCUMBER_SSHD_PORT'
+environment variable.

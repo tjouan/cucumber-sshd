@@ -42,8 +42,8 @@ qnLMVQddVitzQP7LEhXbNUuUAzEMfA6rAA==
 
       def initialize base_path, wait_ready: false
         @base_path  = base_path || BASE_PATH
-        @host       = ENV['SSHD_TEST_HOST'] ? ENV['SSHD_TEST_HOST'] : HOST
-        @port       = ENV['SSHD_TEST_PORT'] ? ENV['SSHD_TEST_PORT'] : PORT
+        @host       = HOST
+        @port       = ENV.fetch 'CUCUMBER_SSHD_PORT', PORT
         @pid        = nil
         @wait_ready = wait_ready
       end
