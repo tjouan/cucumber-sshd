@@ -1,0 +1,46 @@
+cucumber-sshd
+=============
+
+  This ruby gem runs an sshd process for testing purpose in cucumber
+scenarios tagged as `@sshd'.
+
+  The listening port is changed to 2222 so an unprivileged user can
+open it. Host key pair is hard coded, output is silenced, server will
+only listen on localhost with sftp enabled, and a standard ssh config
+file is written at `.ssh/config'.
+
+  Optionally, cucumber process will block until sshd accepts
+connections, and the same sshd process can also be configured to
+persist across the whole test suite for faster run.
+
+
+Warning
+-------
+
+* pollute cucumber contexts with multiple instance variables;
+* pollute global context with a variable;
+* uses `Kernel#at_exit' when `wait_ready' option is enabled.
+
+
+Usage
+-----
+
+### cucumber config
+
+Before do
+  # Persists the sshd process across tests (default is to start and
+  # stop around each test).
+  @_sshd_fast       = true
+
+  # Block cucumber process until sshd accepts new connections.
+  @_sshd_wait_ready = true
+end
+require 'cucumber/sshd/cucumber'
+
+### runtime config
+
+You can control the host name and the port with environment variables.
+Here are the defaults:
+
+    SSHD_TEST_HOST=some_host.test
+    SSHD_TEST_PORT=2222
