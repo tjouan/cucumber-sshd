@@ -1,13 +1,11 @@
 module Cucumber
   module SSHD
     class Server
-      BASE_PATH             = 'tmp/home'.freeze
       HOST                  = 'some_host.test'.freeze
       HOSTNAME              = 'localhost'.freeze
-      LISTEN_ADDR           = '::1'.freeze
-      PORT                  = 2222
       COMMAND               = '/usr/sbin/sshd'.freeze
       COMMAND_ARGS          = '-Deq'.freeze
+      COMMAND_ARGS_DEBUG    = '-De'.freeze
       KEY_PATH              = 'etc/ssh_host_rsa_key'.freeze
       KEY_PUB_PATH          = [KEY_PATH, '.pub'].join.freeze
       SSHD_CONFIG_PATH      = 'etc/sshd_config'.freeze
@@ -39,14 +37,16 @@ qnLMVQddVitzQP7LEhXbNUuUAzEMfA6rAA==
         end
       end
 
-      attr_accessor :base_path, :host, :addr, :port, :pid
+      attr_reader :home
 
-      def initialize base_path, wait_ready: false
-        @base_path  = base_path || BASE_PATH
-        @host       = HOST
-        @addr       = ENV.fetch 'CUCUMBER_SSHD_LISTEN', LISTEN_ADDR
-        @port       = ENV.fetch 'CUCUMBER_SSHD_PORT', PORT
-        @pid        = nil
+      def initialize(
+        home:, addr:, port:, debug: false, persist: false, wait_ready: false
+      )
+        @home       = home
+        @addr       = addr
+        @port       = port
+        @debug      = debug
+        @persist    = persist
         @wait_ready = wait_ready
       end
 
@@ -57,17 +57,17 @@ qnLMVQddVitzQP7LEhXbNUuUAzEMfA6rAA==
       end
 
       def start
-        Dir.chdir base_path do
+        Dir.chdir home do
           @pid = fork do
-            $stderr.reopen '/dev/null' unless ENV.key? 'CUCUMBER_SSHD_DEBUG'
+            $stderr.reopen '/dev/null' unless debug?
             exec command
           end
-          if ENV.key? 'CUCUMBER_SSHD_DEBUG'
+          if debug?
             sleep 0.05
             fail "`#{command}` failed" if Process.waitpid pid, Process::WNOHANG
           end
         end
-
+        print_server_info if debug?
         wait_ready! if wait_ready?
       end
 
@@ -78,21 +78,23 @@ qnLMVQddVitzQP7LEhXbNUuUAzEMfA6rAA==
 
     private
 
+      attr_reader :addr, :port, :debug, :persist, :wait_ready, :pid
+
       def command
         [
           COMMAND,
           '-f',
           SSHD_CONFIG_PATH,
-          COMMAND_ARGS
+          (debug? ? COMMAND_ARGS_DEBUG : COMMAND_ARGS)
         ].join ' '
       end
 
       def configure_client
         write_file_secure SSH_CONFIG_PATH, <<-eoh
-Host                    #{host}
+Host                    #{HOST}
   HostName              #{HOSTNAME}
   Port                  #{port}
-  UserKnownHostsFile    #{File.expand_path base_path}/#{SSH_KNOWN_HOSTS_PATH}
+  UserKnownHostsFile    #{File.expand_path home}/#{SSH_KNOWN_HOSTS_PATH}
         eoh
         write_file_secure SSH_KNOWN_HOSTS_PATH, "[#{HOSTNAME}]:2222 #{KEY_PUB}"
       end
@@ -104,16 +106,35 @@ Host                    #{host}
 Port #{port}
 ListenAddress #{addr}
 Protocol 2
-HostKey #{File.expand_path base_path}/#{KEY_PATH}
+HostKey #{File.expand_path home}/#{KEY_PATH}
 PidFile /dev/null
 UsePrivilegeSeparation no
 Subsystem sftp #{sftp_server_path}
-ForceCommand HOME=#{File.expand_path base_path} sh -c "cd ~; [ -f .ssh/rc ] && . .ssh/rc; $SSH_ORIGINAL_COMMAND"
+ForceCommand HOME=#{File.expand_path home} sh -c "cd ~; [ -f .ssh/rc ] && . .ssh/rc; $SSH_ORIGINAL_COMMAND"
         eoh
       end
 
       def create_dir_secure path
-        FileUtils.mkdir_p File.join(base_path, path), mode: 0700
+        FileUtils.mkdir_p File.join(home, path), mode: 0700
+      end
+
+      def debug?
+        !!debug
+      end
+
+      def persist?
+        !!persist
+      end
+
+      def print_server_info
+        puts <<-eoh
+CUCUMBER SSHD STARTING ---------------------------------------------------------
+HOME:       #{home}
+LISTEN:     #{addr}:#{port}
+PERSIST:    #{persist}
+WAIT_READY: #{wait_ready}
+--------------------------------------------------------------------------------
+        eoh
       end
 
       def sftp_server_path
@@ -128,11 +149,11 @@ ForceCommand HOME=#{File.expand_path base_path} sh -c "cd ~; [ -f .ssh/rc ] && .
       end
 
       def wait_ready?
-        !!@wait_ready
+        !!wait_ready
       end
 
       def write_file_secure path, content
-        File.open File.join(base_path, path), ?w, 0600 do |file|
+        File.open File.join(home, path), ?w, 0600 do |file|
           file.write content
         end
       end

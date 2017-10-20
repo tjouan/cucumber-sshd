@@ -2,7 +2,7 @@ require 'tempfile'
 
 def run command
   @ssh = ChildProcess.build *command
-  @ssh.cwd = @_sshd.base_path
+  @ssh.cwd = $_sshd.home
   @ssh.io.stdout = Tempfile.new File.basename $0 + ?_
   @ssh.io.stderr = Tempfile.new File.basename $0 + ?_
   @ssh.start
