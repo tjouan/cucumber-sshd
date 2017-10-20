@@ -18,6 +18,6 @@ end
 
 Then /^the output must be the server base path$/ do
   prepare_output do |output|
-    expect(output.chomp).to eq File.expand_path @_sshd.base_path
+    expect(output.chomp).to eq File.expand_path $_sshd.home
   end
 end
