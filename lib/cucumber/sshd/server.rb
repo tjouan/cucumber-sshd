@@ -57,8 +57,12 @@ qnLMVQddVitzQP7LEhXbNUuUAzEMfA6rAA==
       def start
         Dir.chdir base_path do
           @pid = fork do
-            $stderr.reopen '/dev/null'
+            $stderr.reopen '/dev/null' unless ENV.key? 'CUCUMBER_SSHD_DEBUG'
             exec command
+          end
+          if ENV.key? 'CUCUMBER_SSHD_DEBUG'
+            sleep 0.05
+            fail "`#{command}` failed" if Process.waitpid pid, Process::WNOHANG
           end
         end
 
