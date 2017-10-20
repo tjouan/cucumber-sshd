@@ -24,5 +24,5 @@ end
 
 
 Then /^the command must terminate successfully$/ do
-  expect(@ssh.exit_code).to be 0
+  expect(@ssh.exit_code).to eq 0
 end
