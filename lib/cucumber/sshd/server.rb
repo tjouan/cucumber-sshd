@@ -32,7 +32,7 @@ qnLMVQddVitzQP7LEhXbNUuUAzEMfA6rAA==
       class << self
         def start *args
           server = new args.shift, *args
-          server.make_env
+          server.configure
           server.start
           server
         end
@@ -48,10 +48,10 @@ qnLMVQddVitzQP7LEhXbNUuUAzEMfA6rAA==
         @wait_ready = wait_ready
       end
 
-      def make_env
+      def configure
         %w[etc .ssh].map { |e| create_dir_secure e }
-        make_env_server
-        make_env_client
+        configure_server
+        configure_client
       end
 
       def start
@@ -81,11 +81,7 @@ qnLMVQddVitzQP7LEhXbNUuUAzEMfA6rAA==
         ].join ' '
       end
 
-      def create_dir_secure path
-        FileUtils.mkdir_p File.join(base_path, path), mode: 0700
-      end
-
-      def make_env_client
+      def configure_client
         write_file_secure SSH_CONFIG_PATH, <<-eoh
 Host                    #{host}
   HostName              #{HOSTNAME}
@@ -95,7 +91,7 @@ Host                    #{host}
         write_file_secure SSH_KNOWN_HOSTS_PATH, "[#{HOSTNAME}]:2222 #{KEY_PUB}"
       end
 
-      def make_env_server
+      def configure_server
         write_file_secure KEY_PATH, KEY
         write_file_secure KEY_PUB_PATH, KEY_PUB
         write_file_secure SSHD_CONFIG_PATH, <<-eoh
@@ -108,6 +104,10 @@ UsePrivilegeSeparation no
 Subsystem sftp #{sftp_server_path}
 ForceCommand HOME=#{File.expand_path base_path} sh -c "cd ~; [ -f .ssh/rc ] && . .ssh/rc; $SSH_ORIGINAL_COMMAND"
         eoh
+      end
+
+      def create_dir_secure path
+        FileUtils.mkdir_p File.join(base_path, path), mode: 0700
       end
 
       def sftp_server_path
