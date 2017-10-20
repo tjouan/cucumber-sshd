@@ -4,6 +4,7 @@ module Cucumber
       BASE_PATH             = 'tmp/home'.freeze
       HOST                  = 'some_host.test'.freeze
       HOSTNAME              = 'localhost'.freeze
+      LISTEN_ADDR           = '::1'.freeze
       PORT                  = 2222
       COMMAND               = '/usr/sbin/sshd'.freeze
       COMMAND_ARGS          = '-Deq'.freeze
@@ -38,11 +39,12 @@ qnLMVQddVitzQP7LEhXbNUuUAzEMfA6rAA==
         end
       end
 
-      attr_accessor :base_path, :host, :port, :pid
+      attr_accessor :base_path, :host, :addr, :port, :pid
 
       def initialize base_path, wait_ready: false
         @base_path  = base_path || BASE_PATH
         @host       = HOST
+        @addr       = ENV.fetch 'CUCUMBER_SSHD_LISTEN', LISTEN_ADDR
         @port       = ENV.fetch 'CUCUMBER_SSHD_PORT', PORT
         @pid        = nil
         @wait_ready = wait_ready
@@ -100,7 +102,7 @@ Host                    #{host}
         write_file_secure KEY_PUB_PATH, KEY_PUB
         write_file_secure SSHD_CONFIG_PATH, <<-eoh
 Port #{port}
-ListenAddress ::1
+ListenAddress #{addr}
 Protocol 2
 HostKey #{File.expand_path base_path}/#{KEY_PATH}
 PidFile /dev/null
