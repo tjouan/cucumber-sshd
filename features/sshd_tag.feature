@@ -2,22 +2,22 @@ Feature: @sshd cucumber tag
 
   @sshd
   Scenario: allows connection to a running sshd
-    When I run "echo \$SSH_CONNECTION" remotely
+    When I run "echo $SSH_CONNECTION" remotely
     Then the output must contain "2222"
 
   @sshd
-  Scenario: logs the user in aruba current directory
+  Scenario: logs the user in a specific HOME directory
     When I run "pwd" remotely
-    Then the output must be aruba current directory
+    Then the output must be the server base path
 
   @sshd
   Scenario: allows sftp usage
     When I run "bye" sftp command remotely
-    Then the output must contain "Connected"
+    Then the command must terminate successfully
 
   @sshd
   Scenario: sources .ssh/rc on new session
-    Given a file named ".ssh/rc" with:
+    Given a file named .ssh/rc with:
       """
       echo some message
       """
