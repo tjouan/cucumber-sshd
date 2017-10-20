@@ -13,8 +13,9 @@ Gem::Specification.new do |s|
 
   s.files       = `git ls-files lib`.split $/
 
-  s.add_dependency 'aruba', '~> 0.8', '< 0.9'
+  s.add_dependency 'childprocess', '~> 0.8'
 
-  s.add_development_dependency 'cucumber',  '~> 2.0'
-  s.add_development_dependency 'rake',      '~> 10.4'
+  s.add_development_dependency 'cucumber', '~> 2.0'
+  s.add_development_dependency 'rake', '~> 10.4'
+  s.add_development_dependency 'rspec-expectations', '~> 3.7'
 end

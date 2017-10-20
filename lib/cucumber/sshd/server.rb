@@ -1,10 +1,7 @@
-require 'aruba/api'
-
 module Cucumber
   module SSHD
     class Server
-      include Aruba::Api
-
+      BASE_PATH             = 'tmp/home'.freeze
       HOST                  = 'some_host.test'.freeze
       HOSTNAME              = 'localhost'.freeze
       PORT                  = 2222
@@ -44,7 +41,7 @@ qnLMVQddVitzQP7LEhXbNUuUAzEMfA6rAA==
       attr_accessor :base_path, :host, :port, :pid
 
       def initialize base_path, wait_ready: false
-        @base_path  = base_path
+        @base_path  = base_path || BASE_PATH
         @host       = ENV['SSHD_TEST_HOST'] ? ENV['SSHD_TEST_HOST'] : HOST
         @port       = ENV['SSHD_TEST_PORT'] ? ENV['SSHD_TEST_PORT'] : PORT
         @pid        = nil
@@ -58,7 +55,7 @@ qnLMVQddVitzQP7LEhXbNUuUAzEMfA6rAA==
       end
 
       def start
-        cd ?. do
+        Dir.chdir base_path do
           @pid = fork do
             $stderr.reopen '/dev/null'
             exec command
@@ -85,8 +82,7 @@ qnLMVQddVitzQP7LEhXbNUuUAzEMfA6rAA==
       end
 
       def create_dir_secure path
-        create_directory path
-        chmod 0700, path
+        FileUtils.mkdir_p File.join(base_path, path), mode: 0700
       end
 
       def make_env_client
@@ -130,8 +126,9 @@ ForceCommand HOME=#{File.expand_path base_path} sh -c "cd ~; [ -f .ssh/rc ] && .
       end
 
       def write_file_secure path, content
-        write_file path, content
-        chmod 0600, path
+        File.open File.join(base_path, path), ?w, 0600 do |file|
+          file.write content
+        end
       end
     end
   end
