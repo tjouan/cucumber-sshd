@@ -25,19 +25,15 @@ Warning
 Usage
 -----
 
-### cucumber config
+### cucumber setup
 
-Before do
-  # Persists the sshd process across tests (default is to start and
-  # stop around each test).
-  @_sshd_fast       = true
-
-  # Block cucumber process until sshd accepts new connections.
-  @_sshd_wait_ready = true
-end
 require 'cucumber/sshd/cucumber'
 
-### runtime config
+### runtime configuration via environment
 
-  You can control the listening port with `CUCUMBER_SSHD_PORT'
-environment variable.
+CUCUMBER_SSHD_HOME        home dir for ssh config and logged user
+CUCUMBER_SSHD_LISTEN      sshd listening address
+CUCUMBER_SSHD_PORT        sshd listening port
+CUCUMBER_SSHD_DEBUG       print debug info, avoid sshd -q option flag
+CUCUMBER_SSHD_PERSIST     persists the sshd process across scenarios
+CUCUMBER_SSHD_WAIT_READY  block until sshd accepts connections
