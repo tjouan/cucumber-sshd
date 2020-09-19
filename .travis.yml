@@ -10,9 +10,8 @@ notifications:
     - tj+travis_cucumber_sshd@a13.fr
 
 env:
+  - RUBYVER=2.6-stable
   - RUBYVER=2.5-stable
-  - RUBYVER=2.4-stable
-  - RUBYVER=2.3-stable
 cache:
   directories:
     - ${HOME}/.gem/travis
